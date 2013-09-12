@@ -29,7 +29,7 @@ connect(Host, Port, HostPsw, Group, Nick) ->
 .
 
 %%初始化
-handler(Host, Port, HostPsw, Group, Nick) ->
+handler(Host, Port,HostPsw, Group, Nick) ->
   process_flag(trap_exit, true),
   Widget = widget:start(self()),
   set_title(Widget, Nick),
@@ -45,7 +45,7 @@ disconnect(Widget, Group, Nick) ->
   receive
     {connected, MM} ->
       insert_str(Widget, "connected to server\nsending data\n"),
-%% todo lib_chan_mm:send(MM, {login, Group, Nick}),
+      lib_chan_mm:send(MM, {login, Group, Nick}),
       wait_login_response(Widget, MM);
 
     {Widget, destroyed} -> exit(died);
@@ -88,7 +88,7 @@ active(Widget, MM)->
   end
 .
 
-start_connector(Host,Port,Pwd)->
+start_connect(Host,Port,Pwd)->
   S=self(),
   spawn_link(fun()-> try_to_connect(S,Host,Port,Pwd) end)
 

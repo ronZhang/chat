@@ -9,7 +9,6 @@
 
 
 
-
 %% 发送消息
 send(Pid,Term)->
   Pid ! {send,Term}.
@@ -68,7 +67,7 @@ loop1(Socket,Pid,Trace) ->
 .
 
 trace_it(false,_) -> void;
-trace_it({true,F},M)-> F(M).
+trace_it(true,{F,M})-> F(M).
 
 
 
