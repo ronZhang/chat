@@ -107,7 +107,99 @@ really_start(MM,ArgC,{Mod,Func,ArgS})->
     Why ->io:format("server error should die with exit was : ~p~n",[Why])
   end.
 
-get_service_definition()
+get_service_definition(Mod,[{service,Mod,password,Pwd,mfa,M,F,A}|_])  ->
+  {yes,Pwd,{M,F,A}}   ;
+
+get_service_definition(Name,[_|T])->
+  get_service_definition(Name,T);
+get_service_definition(_,[])-> no.
+
+
+connect(Host,Port,Service,Secret,ArgC)->
+    S=self(),
+    MM=spawn(fun() ->connect(S,Host,Port)end),
+    receive
+      {MM,ok} ->
+        case authenticate(MM,Service,Secret,ArgC) of
+          ok -> {ok,MM};
+          Error -> Error
+        end;
+      {MM,Error} -> Error
+    end .
+
+
+
+
+
+
+
+connect (Parent,Host,Port) ->
+  case lib_chan_cs:start_raw_client(Host,Port,4) of
+    {ok,Socket} ->
+      Parent !{self(),ok},
+      lib_chan_mm:loop(Socket,Parent);
+    Error ->
+      Parent !{self(),Error}
+  end.
+
+
+
+authenticate(MM,Service,Secret,Argc) ->
+  send(MM,{startservice,Service,Argc}),
+  receive
+    {chan,MM,ack} -> ok;
+    {chan,MM,{challenge,C}} ->
+      R=lib_chan_auth:make_response(C,Secret),
+      send(MM,{response,R}),
+      receive
+        {chan,MM,ack} ->
+          ok;
+        {chan,MM,authFail}->
+          wait_close(MM),
+          {error,authFail};
+        Other ->{error,Other}
+      end;
+    {chan,MM,badService} ->
+      wait_close(MM),
+      {error,badService};
+    Other ->
+      {error,Other}
+   end.
+
+
+
+wait_close(MM)->
+  receive
+    {chan_closed,MM} ->
+      true
+    after 5000 ->
+      io:format("error lib_chan~n"),
+      true
+    end.
+
+
+
+
+
+disconnect(MM) -> close(MM).
+
+rpc(MM,Q)->
+  send(MM,Q),
+  receive
+    {chan,MM,Reply} ->
+      Reply
+  end.
+
+cast(MM,Q) ->
+  send(MM,Q).
+
+
+
+
+
+
+
+
 
 
 
