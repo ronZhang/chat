@@ -12,7 +12,14 @@
 make_challenge()->
     random_string(25).
 make_response(Challenge,Sceret)->
- lib_md5:string(Challenge,Sceret).
+ lib_md5:string(Challenge++Sceret).
+
+
+is_response_correct(Challenge,Response,Secret)->
+  case lib_md5:string(Challenge++Secret) of
+    Response -> true;
+    _ -> false
+  end.
 
 random_string(N)->
   random_seed(),
