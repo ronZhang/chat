@@ -1,2 +1,9 @@
-{['src/client/*','lib/*'],[debug_info,{outdir,"ebin"},{i,"include"}]}.
+{
+['src/client/*','lib/*','test/*'],
+[
+    debug_info,
+    {outdir,"ebin"},
+    {i,"include"}
+]
+}.
 

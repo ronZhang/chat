@@ -49,7 +49,7 @@ stop(Port) when is_integer(Port) ->
 
 
 children(Port) when is_integer(Port) ->
-  port_name(Port) ! {children(), self()},
+  port_name(Port) ! {children, self()},
   receive
     {session_server, Reply} -> Reply
   end
@@ -79,7 +79,7 @@ cold_start(Master, Port, Fun, Max, PacketLength) ->
 .
 
 %% 管理连接，离开，接入，开启新连接
-socket_loop(Listen, New, Active,[], Fun, Max) ->
+socket_loop(Listen, New, Active, Fun, Max) ->
   receive
     {istarted, New} ->
       Active1 = [New|Active],

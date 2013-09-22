@@ -3,6 +3,8 @@
 -author("Administrator").
 
 %% API
+-import(lists,[map/2,member/2,foreach/2]).
+-import(lib_chan_mm,[send/2,close/1]).
 -export([]).
 -compile(export_all).
 
@@ -12,7 +14,7 @@ start_server() ->
       false->
         exit({ebadEnv,"HOME"});
       Home ->
-        start_serve
+        start_server(Home++"/lib.conf")
 
 
   end.
@@ -23,11 +25,11 @@ start_server(ConfigFile)->
     {ok,ConfigData} ->
       io:format("ConfigData=~p~n",[ConfigData]),
       case check_terms(ConfigData) of
-        []-> start_server(ConfigData);
+        []-> start_server1(ConfigData);
         Errors ->
           exit({eDeaemonConfig,Errors})
       end;
-    {error,Why} -> exit({eDaemonConfig,Why})
+    {error,Why} -> exit({eFileError,Why})
    end.
 
 

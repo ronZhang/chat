@@ -117,7 +117,7 @@ to_str(Term)->
   io:format("~p~n",[Term])
 .
 
-parse_command(Str) -> skip_to_gt(Str).
+parse_command(Str) -> skip_to_get(Str).
 
 skip_to_get(">"++T)->T;
 skip_to_get([_|T])->skip_to_get(T);
