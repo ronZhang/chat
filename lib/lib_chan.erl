@@ -105,7 +105,7 @@ do_authentication(Pwd,MM,ArgC,MFA)->
 really_start(MM,ArgC,{Mod,Func,ArgS})->
   case (catch apply(Mod,Func,[MM,ArgC,ArgS])) of
     {'EXIT',normal}-> true;
-    {'EXIT',Why} -> io:format("server error :~p~n",[why]);
+    {'EXIT',Why} -> io:format("server error :~p~n",[Why]);
     Why ->io:format("server error should die with exit was : ~p~n",[Why])
   end.
 
@@ -147,7 +147,7 @@ connect (Parent,Host,Port) ->
 
 
 authenticate(MM,Service,Secret,Argc) ->
-  send(MM,{startservice,Service,Argc}),
+  send(MM,{startService,Service,Argc}),
   receive
     {chan,MM,ack} -> ok;
     {chan,MM,{challenge,C}} ->
